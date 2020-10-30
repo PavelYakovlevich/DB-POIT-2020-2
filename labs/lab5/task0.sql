@@ -73,8 +73,8 @@ GO
 ---------------------------------------------
 
 SELECT Purchasing.MY_SUM(2);
-SELECT * from Purchasing.GET_BEST_ORDERS(29825,3)
-SELECT * from Purchasing.GET_BEST_ORDERS2(29825,3)
+SELECT * FROM Purchasing.GET_BEST_ORDERS(29825,3)
+SELECT * FROM Purchasing.GET_BEST_ORDERS2(29825,3)
 
-select * from Sales.SalesOrderHeader
-where CustomerID = 29825;
+SELECT * FROM Sales.SalesOrderHeader
+WHERE CustomerID = 29825;

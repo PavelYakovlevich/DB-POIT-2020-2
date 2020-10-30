@@ -73,8 +73,31 @@ ALTER TABLE dbo.Address
 DROP COLUMN AddressType;
 
 SELECT *
-FROM AdventureWorks2012.INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE
+FROM AdventureWorks2012.INFORMATION_SCHEMA.
 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Address';
+
+SELECT
+    default_constraints.name
+FROM 
+    sys.all_columns
+
+        INNER JOIN
+    sys.tables
+        ON all_columns.object_id = tables.object_id
+
+        INNER JOIN 
+    sys.schemas
+        ON tables.schema_id = schemas.schema_id
+
+        INNER JOIN
+    sys.default_constraints
+        ON all_columns.default_object_id = default_constraints.object_id
+
+WHERE 
+        schemas.name = 'dbo'
+    AND tables.name = 'Address'
+    AND all_columns.name = 'columnname'
+
 
 ALTER TABLE Persons
 ALTER COLUMN City DROP DEFAULT;

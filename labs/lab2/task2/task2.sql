@@ -16,6 +16,8 @@ CHECK(PostalCode LIKE '[0-9][0-9][0-9][0-9][0-9]');
 ALTER TABLE dbo.Address
 ADD CONSTRAINT MD_CONSTR DEFAULT CURRENT_TIMESTAMP FOR ModifiedDate;
 
+SET IDENTITY_INSERT dbo.Address ON;
+
 INSERT INTO dbo.Address (
 	   AddressID, 
 	   AddressLine1, 

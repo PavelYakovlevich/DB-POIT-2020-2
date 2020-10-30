@@ -3,9 +3,7 @@ ADD CountryRegionCode NVARCHAR(3),
 	TaxRate SMALLMONEY,
 	DiffMin AS TaxRate - 5.00
 
-	SELECT * FROM dbo.Address;
-
-SELECT AddressID,
+SELECT  AddressID,
 		AddressLine1,
 		AddressLine2,
 		City,
@@ -50,13 +48,13 @@ WHERE StateProvinceID = 36
 
 set identity_insert dbo.Address on;
 
-MERGE dbo.Address AS dboA
-	USING #Address AS tempA
-ON (dboA.AddressID = tempA.AddressID)
+MERGE dbo.Address AS _target
+	USING #Address AS _source
+ON (_target.AddressID = _source.AddressID)
 WHEN MATCHED
     THEN UPDATE SET
-		dboA.CountryRegionCode = tempA.CountryRegionCode, 
-		dboA.TaxRate = tempA.TaxRate
+		_target.CountryRegionCode = _source.CountryRegionCode, 
+		_target.TaxRate = _source.TaxRate
 WHEN NOT MATCHED BY TARGET
     THEN INSERT 
 		 (
@@ -72,15 +70,15 @@ WHEN NOT MATCHED BY TARGET
 		 )
 		 VALUES
 		 (
-			tempA.AddressID,
-			tempA.AddressLine1,
-			tempA.AddressLine2,
-			tempA.City,
-			tempA.StateProvinceID,
-			tempA.PostalCode,
-			tempA.ModifiedDate,
-			tempA.CountryRegionCode,
-			tempA.TaxRate
+			_source.AddressID,
+			_source.AddressLine1,
+			_source.AddressLine2,
+			_source.City,
+			_source.StateProvinceID,
+			_source.PostalCode,
+			_source.ModifiedDate,
+			_source.CountryRegionCode,
+			_source.TaxRate
 		 )
-WHEN NOT MATCHED BY SOURCE
-    THEN DELETE;
+WHEN NOT MATCHED BY SOURCE THEN 
+	DELETE; 

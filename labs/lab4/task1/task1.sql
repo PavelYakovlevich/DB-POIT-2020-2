@@ -1,3 +1,5 @@
+DROP TABLE Production.WorkOrderHst
+
 CREATE TABLE Production.WorkOrderHst(
 	ID				INT IDENTITY(1,1) NOT NULL,
 	Action			NVARCHAR(6)		  NOT NULL,
@@ -8,15 +10,11 @@ CREATE TABLE Production.WorkOrderHst(
 )
 GO
 
-DROP TRIGGER AFTER_INSERT_DEL_UPD;
-GO
-
 CREATE TRIGGER AFTER_INSERT_DEL_UPD
 ON Production.WorkOrder
 AFTER INSERT, UPDATE, DELETE
 AS
 	DECLARE @action_name NVARCHAR(6);
-	DECLARE @src_id INT;
 
 	IF(NOT EXISTS(
 		SELECT * 
@@ -37,15 +35,6 @@ AS
 		SET @action_name = 'Update'
 	END
 
-	SELECT @src_id = A.WorkOrderID
-	FROM (
-		SELECT WorkOrderID
-		FROM inserted
-		UNION 
-		SELECT WorkOrderID
-		FROM deleted
-	) AS A
-
 	INSERT 
 	INTO Production.WorkOrderHst
 	(
@@ -54,12 +43,19 @@ AS
 		SourceId,
 		UserName
 	)
-	VALUES(
+	SELECT 
 		@action_name,
 		GETDATE(),
-		@src_id,
-		'pyakovlevich'
-	)
+		A.WorkOrderID,
+		SYSTEM_USER
+	FROM
+	(
+		SELECT DISTINCT WorkOrderID
+		FROM inserted
+		UNION 
+		SELECT WorkOrderID
+		FROM deleted
+	) A
 GO
 
 DROP VIEW All_colums
@@ -86,10 +82,56 @@ INSERT INTO All_colums (
 	ModifiedDate
 )
 VALUES(
-	111411,
+	111454,
 	456,
 	8,
-	0,
+	255,
+	GETDATE(),
+	GETDATE(),
+	GETDATE(),
+	NULL,
+	GETDATE()
+)
+
+INSERT INTO All_colums (
+	WorkOrderID,
+	ProductID,
+	OrderQty,
+	ScrappedQty,
+	StartDate,
+	EndDate,
+	DueDate,
+	ScrapReasonID,
+	ModifiedDate
+)
+VALUES(
+	111457,
+	456,
+	8,
+	255,
+	GETDATE(),
+	GETDATE(),
+	GETDATE(),
+	NULL,
+	GETDATE()
+)
+
+INSERT INTO All_colums (
+	WorkOrderID,
+	ProductID,
+	OrderQty,
+	ScrappedQty,
+	StartDate,
+	EndDate,
+	DueDate,
+	ScrapReasonID,
+	ModifiedDate
+)
+VALUES(
+	111456,
+	456,
+	8,
+	255,
 	GETDATE(),
 	GETDATE(),
 	GETDATE(),
@@ -99,9 +141,12 @@ VALUES(
 
 UPDATE All_colums
 SET ModifiedDate = GETDATE()
-WHERE WorkOrderId = 111411;
+WHERE OrderQty = 8 AND ScrappedQty = 255;
+
+SELECT * FROM All_colums
+WHERE OrderQty = 8 AND ScrappedQty = 255;
 
 DELETE FROM All_colums
-WHERE WorkOrderID = 111211;
+WHERE WorkOrderID BETWEEN 4520 AND 4522;
 
 SELECT * FROM Production.WorkOrderHst
