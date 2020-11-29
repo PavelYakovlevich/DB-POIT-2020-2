@@ -59,27 +59,21 @@ CREATE TRIGGER instead_of_insert
 ON temp_view
 INSTEAD OF INSERT
 AS
-	WITH DistinctScrapReason AS
+	WITH DSR AS
 	(
-		SELECT 
-			I.*,
-			SCR.Name,
-			ROW_NUMBER() OVER
-			(
-				PARTITION BY SCName
-				ORDER BY WorkOrderID
-			) AS r_num
+		SELECT DISTINCT
+			SCR.Name
 		FROM inserted as I
 		LEFT JOIN Production.ScrapReason as SCR
 			ON SCR.Name = I.SCName
 		WHERE SCR.Name IS NULL
-	) 
+	)
 
 	INSERT INTO Production.ScrapReason
 	SELECT 
-		DSR.SCName,
+		DSR.Name,
 		GETDATE()
-	FROM DistinctScrapReason AS DSR
+	FROM DSR
 
 	INSERT INTO Production.WorkOrder 
 	SELECT 
@@ -125,6 +119,13 @@ CREATE TRIGGER instead_of_delete
 ON temp_view
 INSTEAD OF DELETE
 AS
+	DELETE PWO
+	FROM Production.WorkOrder as PWO
+	INNER JOIN Production.Product as PP
+		ON PWO.ProductID = PP.ProductID
+	INNER JOIN deleted as D
+		ON D.ProductName = PP.Name;
+
 	DELETE PSR
 	FROM Production.ScrapReason as PSR
 	INNER JOIN Production.WorkOrder as PWO
@@ -132,15 +133,8 @@ AS
 	INNER JOIN Production.Product as PP
 		ON PP.ProductID = PWO.ProductID 
 	INNER JOIN deleted as D
-		ON PP.Name = D.ProductName; 
-
-	DELETE PWO
-	FROM Production.WorkOrder as PWO
-	INNER JOIN Production.Product as PP
-		ON PWO.ProductID = PP.ProductID
-	INNER JOIN deleted as D
-		ON D.ProductName = PP.Name;
-	
+		ON PP.Name = D.ProductName 
+	where Not exists(select * from Production.WorkOrder as temp where temp.ScrapReasonID = PSR.ScrapReasonID);
 GO
 
 INSERT INTO temp_view
@@ -169,14 +163,43 @@ VALUES
 	GETDATE(),
 	1,
 	GETDATE(),
-	'TEST5',
+	'TEST13',
 	GETDATE(),
 	'Adjustable Race'
-)
+),
+(
+	8888889,
+	2,
+	8,
+	8,
+	GETDATE(),
+	GETDATE(),
+	GETDATE(),
+	1,
+	GETDATE(),
+	'TEST13',
+	GETDATE(),
+	'Adjustable Race'
+),
+(
+	8888890,
+	2,
+	8,
+	8,
+	GETDATE(),
+	GETDATE(),
+	GETDATE(),
+	1,
+	GETDATE(),
+	'TEST13',
+	GETDATE(),
+	'Adjustable Race'
+);
+
 
 update temp_view
 set
-	StartDate = GETDATE(),
+	ModifiedDate = GETDATE(),
 	PSRModifiedDate = GETDATE()
 where ProductName = 'Adjustable Race'
 

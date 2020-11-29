@@ -1,4 +1,5 @@
-DROP TABLE Production.WorkOrderHst
+DROP TABLE Production.WorkOrderHst;
+GO
 
 CREATE TABLE Production.WorkOrderHst(
 	ID				INT IDENTITY(1,1) NOT NULL,
@@ -82,7 +83,7 @@ INSERT INTO All_colums (
 	ModifiedDate
 )
 VALUES(
-	111454,
+	111459,
 	456,
 	8,
 	255,
@@ -91,20 +92,8 @@ VALUES(
 	GETDATE(),
 	NULL,
 	GETDATE()
-)
-
-INSERT INTO All_colums (
-	WorkOrderID,
-	ProductID,
-	OrderQty,
-	ScrappedQty,
-	StartDate,
-	EndDate,
-	DueDate,
-	ScrapReasonID,
-	ModifiedDate
-)
-VALUES(
+),
+(
 	111457,
 	456,
 	8,
@@ -114,20 +103,8 @@ VALUES(
 	GETDATE(),
 	NULL,
 	GETDATE()
-)
-
-INSERT INTO All_colums (
-	WorkOrderID,
-	ProductID,
-	OrderQty,
-	ScrappedQty,
-	StartDate,
-	EndDate,
-	DueDate,
-	ScrapReasonID,
-	ModifiedDate
-)
-VALUES(
+),
+(
 	111456,
 	456,
 	8,
@@ -147,6 +124,8 @@ SELECT * FROM All_colums
 WHERE OrderQty = 8 AND ScrappedQty = 255;
 
 DELETE FROM All_colums
-WHERE WorkOrderID BETWEEN 4520 AND 4522;
+WHERE WorkOrderID BETWEEN 111454 AND 111459;
 
 SELECT * FROM Production.WorkOrderHst
+
+select * from All_colums;
